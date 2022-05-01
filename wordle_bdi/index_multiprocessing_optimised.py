@@ -171,7 +171,39 @@ def calculateEnthropie(word,all_wd,all_infos):
         else:
             all_infos_used-=1
 
-    return (enthropie/all_infos_used)
+    return (enthropie)
+
+
+def calculateEnthropieTwoSteps(word,all_wd,all_infos):
+
+    all_infos_used = len(all_infos)
+    taille_data = len(all_wd)
+    enthropie = 0;
+
+    for select_infos in all_infos:
+        reste = []
+        
+        for wd in all_wd:
+            if word_is_in(select_infos,word,wd):
+                reste.append(wd)
+
+        qt_reste = len(reste)/taille_data
+        highest = -1
+
+        for wd2 in reste:
+            act_entr2 = calculateEnthropie(wd2,reste,all_infos)
+            if act_entr2>highest:
+                highest = act_entr2
+        
+        enthropie+=highest*qt_reste
+            
+        if len(reste)!=0:
+            i = calculateI(qt_reste)*qt_reste;
+            enthropie+=i
+        else:
+            all_infos_used-=1
+
+    return (enthropie)
 
 def traitementOfWords(tb):
     act_wd = tb
@@ -224,6 +256,8 @@ def process_wd(tab,lk,data,number,prec,all_vl,infos_tot):
     for wd_ in tab:
 
         act_entr = calculateEnthropie(wd_,all_vl,infos_tot);
+
+        print("Finished",wd_)
 
         lk.acquire()
         
