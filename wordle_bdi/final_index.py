@@ -1,6 +1,7 @@
 from Wordle import Wordle
 from WordleDir import WordleDir
 import random
+import pickle
 import kirundi
 import english
 import time
@@ -50,7 +51,9 @@ def play_ijambo(words):
         print("")
         print("Essayez celui ci :",last_word)
 
-def getMoyenne(wd):
+def getMoyenne(wd,verbose=True):
+
+    moy_table = []
 
     moy = 0
     n = 0
@@ -59,18 +62,37 @@ def getMoyenne(wd):
 
         n+=1
 
-        moot = words[random.randint(0,len(words)-1)]
         moot = lg
-        print("Find",moot)
+        if verbose:
+            print("Find",moot)
+        
         etap = wd.foundMot(moot)
         moy+=len(etap)
-        
-        clear()
 
-        print(etap)
-        print("Nouvelle moyenne :",moy/n)
-        print("nbr :",n)
-        print("")
+        moy_table.append(moy/n)
+
+        #clear()
+
+        if verbose:
+            print(etap)
+            print("Nouvelle moyenne :",moy/n)
+            print("nbr :",n)
+            print("")
+    
+    return moy_table
+
+def saveMoyenne(link,data_moy):
+    with open(link,"wb") as data_file:
+        pickle.dump(data_moy,data_file)
+
+def loadMoyenne(folder,name):
+    with open(folder+"\\"+name,"rb") as data:
+        return pickle.load(data)
+
+def generateAndSaveMoy(wordle,name,path):
+    wordle.bestword = name
+    abs_path = path+wd.bestword
+    saveMoyenne(abs_path,getMoyenne(wordle,verbose=False))
 
 clear = lambda: os.system('cls')
 
@@ -79,19 +101,37 @@ words = kirundi.mots
 
 if __name__== "__main__":
 
-    #words = words[:500]
+    #words = words[:300]
+
+    link = "C:\\Users\\HP\\Desktop\\programmation\\python\\wordle_bdi\\moy_saves\\"
 
     words = traitementOfWords(words);
 
     print("Long :",len(words),"mots")
 
     wd = WordleDir(words)
-    wd.bestword = "ibera"
-    wd.generateAllInfos()
-    time_av = time.time()
-    #print(wd.start())
-    print("Temps :",str(time.time()-time_av))
 
+    wd.bestword = "umubu"
+
+    wd.generateAllInfos()
+
+
+    #print(wd.start())
     #play_ijambo(words)
 
-    getMoyenne(wd)
+    words2 = words.copy()
+    random.shuffle(words2)
+
+    """table_alr = ["umubu"]
+
+    for wd_mt in table_alr:
+        generateAndSaveMoy(wd,wd_mt,link)
+
+    for wd_mt in words2:
+        if not(wd_mt in table_alr):
+            print("-Ok",wd_mt)
+            generateAndSaveMoy(wd,wd_mt,link)"""
+
+    print(getMoyenne(wd,verbose=True))
+
+    #print(loadMoyenne(link,wd.bestword))
